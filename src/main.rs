@@ -1,5 +1,11 @@
-use std::{env::args, path::PathBuf, io::{BufRead, Write}, fmt::Display};
+mod token;
+mod scanner;
+use scanner::Scanner;
 
+mod error;
+use error::LoxError;
+
+use std::{env::args, path::PathBuf, io::{BufRead, Write}};
 
 fn main() {
 
@@ -73,80 +79,13 @@ fn run_file(path: impl Into<PathBuf>) -> Result<(), LoxError> {
 
 fn run(source: &str) -> Result<(), LoxError> {
     
-    let scanner = Scanner::new(source);
-    let tokens = scanner.scan_tokens()?;
+    let mut scanner = Scanner::new(source);
+    scanner.scan_tokens()?;
     
 
-    for token in tokens {
-        println!("{:?}", token);
+    for token in scanner.tokens() {
+        println!("{}", token);
     }
 
     Ok(())
-}
-
-struct Scanner {
-    source: String,
-}
-
-#[derive(Debug)]
-struct Token {
-    tok: String,
-}
-
-impl Scanner {
-    pub fn new(source: impl Into<String>) -> Self {
-        Self {
-            source: source.into(),
-        }
-    }
-}
-
-impl Scanner {
-    pub fn scan_tokens(&self) -> Result<Vec<Token>, LoxError> {
-        Ok(self.source.split_whitespace().map(|s| Token::new(s)).collect())
-    }
-}
-
-impl Token {
-    pub fn new(tok: impl Into<String>) -> Self {
-        Self {
-            tok: tok.into(),
-        }
-    }
-}
-
-
-struct LoxError {
-    line: usize,
-    msg: String, 
-}
-
-impl LoxError {
-
-    pub fn new(line: usize, msg: impl Into<String>) -> Self {
-
-        Self {
-            line,
-            msg: msg.into(),
-        }
-
-    }
-
-    pub fn report(&self) -> () {
-
-        println!("{}", self);
-    }
-
-    pub fn error_with_exit(&self) -> () {
-        self.report();
-        std::process::exit(65);
-    }
-
-
-}
-
-impl Display for LoxError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "[Line {}] Error: {}", self.line, self.msg)
-    }
 }

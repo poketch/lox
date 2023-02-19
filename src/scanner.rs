@@ -1,6 +1,6 @@
 use crate::error::LoxError;
 use crate::token::{Object, Token, TokenType};
-
+use crate::keywords::KEYWORD_MAP;
 pub struct Scanner {
     source: Vec<char>,
     tokens: Vec<Token>,
@@ -105,6 +105,25 @@ impl Scanner {
 
         *self.source.get(self.current + 1).unwrap()
     }
+
+    fn identifier(&mut self) -> Result<(), LoxError> {
+        while self.is_alpha_num(self.peek()) { self.advance(); }
+
+        let text: String = self.source[self.start .. self.current].iter().collect();
+        let ttype =  KEYWORD_MAP.get(&text).unwrap_or(&TokenType::IDENTIFIER);
+
+        self.add_token(*ttype);
+        Ok(())
+
+    }
+
+    fn is_alpha(&self, c: char) -> bool {
+        c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_'
+    }
+
+    fn is_alpha_num(&self, c: char) -> bool {
+        self.is_alpha(c) || c.is_digit(10)
+    }
 }
 
 impl Scanner {
@@ -190,12 +209,13 @@ impl Scanner {
             '\n' => {
                 self.line += 1;
                 Ok(())
-            }
-
+            },
             _ => {
                 if c.is_digit(10) {
                     // checking for base 10 number
                     self.number()
+                } else if self.is_alpha(c) {
+                    self.identifier()
                 } else {
                     Err(LoxError::new(
                         self.line,

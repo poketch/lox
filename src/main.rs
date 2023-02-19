@@ -5,6 +5,8 @@ use scanner::Scanner;
 mod error;
 use error::LoxError;
 
+mod keywords;
+
 use std::{env::args, path::PathBuf, io::{BufRead, Write}};
 
 fn main() {

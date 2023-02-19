@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 #[allow(non_camel_case_types)]
 pub enum TokenType {
     //Single Character 
@@ -17,8 +17,8 @@ pub enum TokenType {
     IDENTIFIER, STRING, NUMBER,
 
     // Keywords
-    AND, CLASS, ELSE, FLASE, PROC, FOR, IF, NIL, OR,
-    PRINT, RETURN, SUPER, THIS, TRUE, VAR, WHILE,
+    AND, CLASS, ELSE, FALSE, PROC, FOR, IF, NIL, OR,
+    PRINT, RETURN, SUPER, THIS, TRUE, LET, WHILE,
     
     EOF,
 }

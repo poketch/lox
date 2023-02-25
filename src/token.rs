@@ -23,7 +23,7 @@ pub enum TokenType {
     EOF,
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub enum Object {
     Num(f64),
     Str(String),
@@ -53,14 +53,18 @@ pub struct Token {
 }
 
 impl Token {
-    pub fn new(ttype: TokenType, lexeme: String, literal: Option<Object>, line: usize) -> Self {
+    pub fn new(ttype: TokenType, lexeme: impl Into<String>, literal: Option<Object>, line: usize) -> Self {
         Self {
             ttype,
-            lexeme,
+            lexeme: lexeme.into(),
             literal,
             line,
         }
     } 
+
+    pub fn lexeme(&self) -> &String {
+        &self.lexeme
+    }
 }
 
 impl Display for Token {
